@@ -44,7 +44,7 @@ char *get_next_line(int fd)
             if (buff_read < 0)
                 return NULL;
         }
-        line[i++] = buffer[buff_pos++]; 
+        line[i++] = buffer[buff_pos++];
         if (line[i - 1] == '\n')
             break;
     }
