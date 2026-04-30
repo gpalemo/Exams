@@ -1,64 +1,36 @@
-#include <unistd.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <stdio.h>
-#include <fcntl.h>
 
-# define BUFFER_SIZE 42
-
-char *ft_strdup(char *str)
-{
-    char *dup;
-    int i;
-    i = 0;
-
-    while (str[i])
-        i++;
-    dup = malloc((sizeof(char) * i) + 1);
-    if (!dup)
-        return NULL;
-    i = 0;
-    while (str[i])
-    {
-        dup[i] = str[i];
-        i++;
-    }
-    dup[i] = '\0';
-    return dup;
-}
-
+#define BUFFER_SIZE 42
 char *get_next_line(int fd)
 {
     static char buffer[BUFFER_SIZE];
-    static int buff_read;
-    static int buff_pos;
-    char line[70000];
-    int i;
-    i = 0;
+    static int buffer_read;
+    static int buffer_pos;
+    char *line;
+    int i = 0;
 
+    if (fd < 0 || BUFFER_SIZE <= 0)
+        return (NULL);
+    line = malloc(70000);
+    if (!line)
+        return (NULL);
     while (1)
     {
-        if (buff_pos == buff_read)
+        if (buffer_pos >= buffer_read)
         {
-            buff_read = read(fd, buffer, BUFFER_SIZE);
-            buff_pos = 0;
-            if (buff_read < 0)
-                return NULL;
+            buffer_read = read(fd, buffer, BUFFER_SIZE);
+            buffer_pos = 0;
+            if (buffer_read <= 0)
+                break;
         }
-        line[i++] = buffer[buff_pos++];
+        line[i++] = buffer[buffer_pos++];
         if (line[i - 1] == '\n')
             break;
     }
     line[i] = '\0';
     if (i == 0)
-        return NULL;
-    return ft_strdup(line);
-}
-
-int main()
-{
-    char *line;
-    int fd;
-    fd = open("file.txt", O_RDWR, 0644);
-    line = get_next_line(fd);
-    printf("%s", line);
+        return (free(line), NULL);
+    return (line);
 }
