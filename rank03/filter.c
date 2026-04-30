@@ -37,11 +37,12 @@ int main(int ac, char **av)
 		perror ("Error :");
 		return (1);
 	}
-	bytes_read = read(0, buffer, 567);
+	line[1] = '\0';
+	bytes_read = read(0, buffer, 1);
 	while (bytes_read > 0)
 	{
 		line = appendbuffer(buffer, line, bytes_read);
-		bytes_read = read(0,buffer, 567);
+		bytes_read = read(0,buffer, 1);
 		if (bytes_read < 0)
 		{
 			perror("Error : ");
