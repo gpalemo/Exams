@@ -2,20 +2,23 @@
 #include <unistd.h>
 #include <stdio.h>
 
-char	*appendbuffer(char *buffer, char *line, int bytes_read)
+char *appendbuffer(char *buffer, char *line, int bytes_read)
 {
+	char *tmp;
 	int i = 0;
 	int j = 0;
 
 	while (line[i])
 		i++;
-	line = realloc(line, i + bytes_read);
-	while (j < bytes_read)
+	tmp = realloc(line, i + bytes_read + 1);
+	if (!tmp)
 	{
-		line[i] = buffer[j];
-		i++;
-		j++;
+		free(line);
+		return (NULL);
 	}
+	line = tmp;
+	while (j < bytes_read)
+		line[i++] = buffer[j++];
 	line[i] = '\0';
 	return (line);
 }
@@ -29,50 +32,40 @@ int main(int ac, char **av)
 	int k = 0;
 	int bytes_read;
 
-	if (ac != 2)
+	if (ac != 2 || av[1][0] == '\0')
 		return (1);
-	line = malloc(2);
+	line = malloc(1);
 	if (!line)
-	{
-		perror ("Error :");
-		return (1);
-	}
-	line[1] = '\0';
+		return (perror("Error"), 1);
+	line[0] = '\0';
 	bytes_read = read(0, buffer, 1);
 	while (bytes_read > 0)
 	{
 		line = appendbuffer(buffer, line, bytes_read);
-		bytes_read = read(0,buffer, 1);
-		if (bytes_read < 0)
-		{
-			perror("Error : ");
-			free(line);
-			return (1);
-		}
+		if (!line)
+			return (perror("Error"), 1);
+		bytes_read = read(0, buffer, 1);
 	}
-	if (av[1][0] == '\0')
-	{
-		free (line);
-		return (1);
-	}
+	if (bytes_read < 0)
+		return (perror("Error"), free(line), 1);
+
 	while (line[i])
 	{
-		while (line[i + j] == av[1][j])
+		while (av[1][j] && line[i + j] == av[1][j])
 			j++;
 		if (av[1][j] == '\0')
 		{
 			while (k < j)
-			{
-				line [i + k] = '*';
-				k++;
-			}
+				line[i + k++] = '*';
+			i += j;
 		}
-		i++;
-		k = 0;
+		else
+			i++;
 		j = 0;
+		k = 0;
 	}
-	printf("%s\n", line);
-	free (line);
+	printf("%s", line);
+	free(line);
 	return (0);
 }
 

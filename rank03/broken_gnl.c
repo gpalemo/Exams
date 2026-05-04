@@ -1,8 +1,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <fcntl.h>
 
-#define BUFFER_SIZE 42
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 42
+#endif
 char *get_next_line(int fd)
 {
     static char buffer[BUFFER_SIZE];
@@ -33,4 +36,17 @@ char *get_next_line(int fd)
     if (i == 0)
         return (free(line), NULL);
     return (line);
+}
+int main()
+{
+    char *line;
+    int fd;
+    fd = open("file.txt", O_RDONLY);
+	line = get_next_line(fd);
+	while (line != NULL)
+	{
+		printf("%s", line);
+    	line = get_next_line(fd);
+	}
+
 }
