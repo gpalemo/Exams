@@ -4,19 +4,12 @@
 
 char *appendbuffer(char *buffer, char *line, int bytes_read)
 {
-	char *tmp;
 	int i = 0;
 	int j = 0;
 
 	while (line[i])
 		i++;
-	tmp = realloc(line, i + bytes_read + 1);
-	if (!tmp)
-	{
-		free(line);
-		return (NULL);
-	}
-	line = tmp;
+	line = realloc(line, i + bytes_read + 1); // ATTENTION !!!!!!!!!!!!!
 	while (j < bytes_read)
 		line[i++] = buffer[j++];
 	line[i] = '\0';
@@ -37,7 +30,7 @@ int main(int ac, char **av)
 	line = malloc(1);
 	if (!line)
 		return (perror("Error"), 1);
-	line[0] = '\0';
+	line[0] = '\0'; // ATTENTION !!!!!!!!!!!!!!
 	bytes_read = read(0, buffer, 1);
 	while (bytes_read > 0)
 	{
@@ -48,7 +41,6 @@ int main(int ac, char **av)
 	}
 	if (bytes_read < 0)
 		return (perror("Error"), free(line), 1);
-
 	while (line[i])
 	{
 		while (av[1][j] && line[i + j] == av[1][j])
